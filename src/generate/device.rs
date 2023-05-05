@@ -66,56 +66,10 @@ pub fn render(_opts: &super::Options, ir: &IR, d: &Device, path: &str) -> Result
             });
         }
     }
-    let n = util::unsuffixed(pos as u64);
+    
     out.extend(quote!(
-        #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-        pub enum Interrupt {
-            #interrupts
-        }
-
-        unsafe impl cortex_m::interrupt::InterruptNumber for Interrupt {
-            #[inline(always)]
-            fn number(self) -> u16 {
-                self as u16
-            }
-        }
-
-        #[cfg(feature = "rt")]
-        mod _vectors {
-            extern "C" {
-                #(fn #names();)*
-            }
-
-            pub union Vector {
-                _handler: unsafe extern "C" fn(),
-                _reserved: u32,
-            }
-
-            #[link_section = ".vector_table.interrupts"]
-            #[no_mangle]
-            pub static __INTERRUPTS: [Vector; #n] = [
-                #vectors
-            ];
-        }
-
         #peripherals
     ));
-
-    if let Some(nvic_priority_bits) = d.nvic_priority_bits {
-        let bits = util::unsuffixed(u64::from(nvic_priority_bits));
-        out.extend(quote! {
-            /// Number available in the NVIC for configuring priority
-            #[cfg(feature = "rt")]
-            pub const NVIC_PRIO_BITS: u8 = #bits;
-        });
-    }
-
-    out.extend(quote! {
-        #[cfg(feature = "rt")]
-        pub use cortex_m_rt::interrupt;
-        #[cfg(feature = "rt")]
-        pub use Interrupt as interrupt;
-    });
 
     Ok(out)
 }

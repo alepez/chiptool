@@ -4,4 +4,4 @@
 target
 Cargo.lock
 *.svd
-pac_generated
+pac-generated
