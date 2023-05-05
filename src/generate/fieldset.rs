@@ -87,14 +87,8 @@ pub fn render(_opts: &super::Options, ir: &IR, fs: &FieldSet, path: &str) -> Res
             items.extend(quote!(
                 #doc
                 #[inline(always)]
-                pub const fn #name(&self) -> #field_ty{
-                    let val = (self.0 >> #bit_offset) & #mask;
-                    #from_bits
-                }
-                #doc
-                #[inline(always)]
-                pub fn #name_set(&mut self, val: #field_ty) {
-                    self.0 = (self.0 & !(#mask << #bit_offset)) | (((#to_bits) & #mask) << #bit_offset);
+                pub fn #name<'a>(&'a mut self) -> crate::common::RegisterField<'a, #bit_offset, #mask, #field_ty> {
+                    crate::common::RegisterField::<'a, #bit_offset, #mask, #field_ty>::from_register(&mut self.0)
                 }
             ));
         }
