@@ -29,12 +29,17 @@ struct ProtoEnum {
 }
 
 pub fn convert_peripheral(ir: &mut IR, p: &svd::Peripheral) -> anyhow::Result<()> {
+    log::info!("Converting peripheral {:?}", p.name);
+
     let mut blocks = Vec::new();
+
+    let registers = p.registers.as_ref().map(|v| v.as_slice()).unwrap_or(&[]);
+
     collect_blocks(
         &mut blocks,
         vec![p.name.clone()],
         p.description.clone(),
-        p.registers.as_ref().unwrap(),
+        registers,
     );
 
     let mut fieldsets: Vec<ProtoFieldset> = Vec::new();
