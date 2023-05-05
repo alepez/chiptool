@@ -2,3 +2,6 @@
 *.org
 *.rs.bk
 target
+Cargo.lock
+*.svd
+pac_generated
