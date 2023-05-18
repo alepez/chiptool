@@ -29,7 +29,10 @@ Example of generated code:
     }
 ```
 
-Currently, `BASE_ADDRESS` is not implemented (it is 0, not the one provided by peripheral node).
+Currently, `BASE_ADDRESS` is not implemented.
+It is generated as 0, not the one provided by peripheral node.
+Here we see the correct address, 0xF0200000.
+
 
 ```rs
 pub mod can0 {
