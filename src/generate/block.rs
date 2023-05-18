@@ -43,7 +43,7 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
 
                 if let Some(array) = &i.array {
                     let (len, offs_expr) = super::process_array(array);
-                    let ty = quote!(#common_path::Reg<#reg_ty, #access, #offset + #offs_expr>);
+                    let ty = quote!(#common_path::Reg<#reg_ty, #access, BASE_ADDRESS, #offset + #offs_expr>);
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
@@ -53,11 +53,11 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
                         }
                     ));
                 } else {
-                    let ty = quote!(#common_path::Reg<#reg_ty, #access, #offset>);
+                    let ty = quote!(#common_path::Reg<#reg_ty, #access, BASE_ADDRESS, #offset>);
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
-                        pub fn #name(self) -> #ty {
+                        pub fn #name() -> #ty {
                             #common_path::Reg::new()
                         }
                     ));
@@ -97,10 +97,10 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
     let out = quote! {
         #doc
         #[derive(Copy, Clone, Eq, PartialEq)]
-        pub struct #name (pub *mut u8);
-        unsafe impl Send for #name {}
-        unsafe impl Sync for #name {}
-        impl #name {
+        pub struct #name<const BASE_ADDRESS: usize>;
+        unsafe impl<const BASE_ADDRESS: usize>Send for #name<BASE_ADDRESS> {}
+        unsafe impl<const BASE_ADDRESS: usize>Sync for #name<BASE_ADDRESS> {}
+        impl<const BASE_ADDRESS: usize> #name<BASE_ADDRESS> {
             #items
         }
     };

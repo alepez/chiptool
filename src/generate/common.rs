@@ -29,13 +29,13 @@ impl Write for RW {}
 impl Write for W {}
 
 #[derive(Copy, Clone, PartialEq, Eq)]
-pub struct Reg<T: Copy, A: Access, const ADDRESS: usize>(PhantomData<(T, A)>);
+pub struct Reg<T: Copy, A: Access, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize>(PhantomData<(T, A)>);
 
-unsafe impl<T: Copy, A: Access, const ADDRESS: usize> Send for Reg<T, A, ADDRESS> {}
-unsafe impl<T: Copy, A: Access, const ADDRESS: usize> Sync for Reg<T, A, ADDRESS> {}
+unsafe impl<T: Copy, A: Access, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Send for Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {}
+unsafe impl<T: Copy, A: Access, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Sync for Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {}
 
-impl<T: Copy, A: Access, const ADDRESS: usize> Reg<T, A, ADDRESS> {
-    const ADDRESS: usize = ADDRESS;
+impl<T: Copy, A: Access, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {
+    const ADDRESS: usize = BASE_ADDRESS + ADDRESS_OFFSET;
 
     pub const fn new() -> Self {
         Self(PhantomData)
@@ -47,21 +47,21 @@ impl<T: Copy, A: Access, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     }
 }
 
-impl<T: Copy, A: Read, const ADDRESS: usize> Reg<T, A, ADDRESS> {
+impl<T: Copy, A: Read, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {
     #[inline(always)]
     pub unsafe fn read(&self) -> T {
         (Self::ADDRESS as *mut T).read_volatile()
     }
 }
 
-impl<T: Copy, A: Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
+impl<T: Copy, A: Write, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {
     #[inline(always)]
     pub unsafe fn write_value(&self, val: T) {
         (Self::ADDRESS as *mut T).write_volatile(val)
     }
 }
 
-impl<T: Default + Copy, A: Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
+impl<T: Default + Copy, A: Write, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {
     #[inline(always)]
     pub unsafe fn write<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
         let mut val = Default::default();
@@ -71,7 +71,7 @@ impl<T: Default + Copy, A: Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     }
 }
 
-impl<T: Copy, A: Read + Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
+impl<T: Copy, A: Read + Write, const BASE_ADDRESS: usize, const ADDRESS_OFFSET: usize> Reg<T, A, BASE_ADDRESS, ADDRESS_OFFSET> {
     #[inline(always)]
     pub unsafe fn modify<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
         let mut val = self.read();
