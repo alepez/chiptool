@@ -57,7 +57,7 @@ pub fn render(_opts: &super::Options, ir: &IR, d: &Device, path: &str) -> Result
 
             peripherals.extend(quote! {
                 #doc
-                pub const #name: #path::<#address> = #path;
+                // pub const #name: #path::<#address> = #path;
             });
         } else {
             peripherals.extend(quote! {

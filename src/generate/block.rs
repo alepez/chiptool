@@ -95,12 +95,13 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
     let name = Ident::new(name, span);
     let doc = util::doc(&b.description);
     let out = quote! {
+        pub const BASE_ADDRESS: usize = 0; // TODO Get base address from perypheral
         #doc
         #[derive(Copy, Clone, Eq, PartialEq)]
-        pub struct #name<const BASE_ADDRESS: usize>;
-        unsafe impl<const BASE_ADDRESS: usize>Send for #name<BASE_ADDRESS> {}
-        unsafe impl<const BASE_ADDRESS: usize>Sync for #name<BASE_ADDRESS> {}
-        impl<const BASE_ADDRESS: usize> #name<BASE_ADDRESS> {
+        pub struct #name;
+        unsafe impl Send for #name {}
+        unsafe impl Sync for #name {}
+        impl #name {
             #items
         }
     };
