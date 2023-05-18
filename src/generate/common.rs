@@ -96,12 +96,12 @@ macro_rules! gen_field {
                 }
             }
 
-            pub fn get(&self) -> $field_type {
+            pub unsafe fn get(&self) -> $field_type {
                 let filtered = (*self.data >> OFFSET) & MASK;
                 filtered.try_into().unwrap()
             }
             
-            pub fn set(&mut self, value: $field_type) {
+            pub unsafe fn set(&mut self, value: $field_type) {
                 let value = value as u32;
                 *self.data &= !(MASK << OFFSET);
                 *self.data |= value << OFFSET;
@@ -121,12 +121,12 @@ impl<'a, const OFFSET: usize> RegisterField<'a, OFFSET, 1, bool> {
         }
     }
 
-    pub fn get(&self) -> bool {
+    pub unsafe fn get(&self) -> bool {
         let filtered = (*self.data >> OFFSET) & 1;
         filtered == 1
     }
     
-    pub fn set(&mut self, value: bool) {
+    pub unsafe fn set(&mut self, value: bool) {
         let value = if value { 1u32 } else { 0u32 };
         *self.data &= !(1 << OFFSET);
         *self.data |= value << OFFSET;
