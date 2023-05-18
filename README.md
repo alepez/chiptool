@@ -75,3 +75,38 @@ fn main() {
     }
 }
 ```
+
+Something even cleaner can be achieved, but:
+
+```rs
+pub mod can0 {
+    use crate::common::*;
+
+    #[doc = "ce_mc_m_can"]
+    #[derive(Copy, Clone, Eq, PartialEq)]
+    pub struct Can0;
+    unsafe impl Send for Can0 {}
+    unsafe impl Sync for Can0 {}
+    impl Can0 {
+        #[doc = "CAN Clock Control Register"]
+        #[inline(always)]
+        pub const fn clc(
+            self,
+        ) -> Reg<regs::Clc, RW, { 0xF0200000 + 32768 }> {
+            Reg::new()
+        }
+        #[doc = "Module Identification Register"]
+        #[inline(always)]
+        pub const fn id(
+            self,
+        ) -> Reg<regs::Id, R, { 0xF0200000 + 32776 }> {
+            Reg::new()
+        }
+        #[doc = "Module Control Register"]
+        #[inline(always)]
+        pub const fn mcr(
+            self,
+        ) -> Reg<regs::Mcr, RW, { 0xF0200000 + 32816 }> {
+            Reg::new()
+        }
+```
