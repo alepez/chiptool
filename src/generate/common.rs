@@ -37,7 +37,7 @@ unsafe impl<T: Copy, A: Access, const ADDRESS: usize> Sync for Reg<T, A, ADDRESS
 impl<T: Copy, A: Access, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     const ADDRESS: usize = ADDRESS;
 
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self(PhantomData)
     }
 
