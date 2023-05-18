@@ -90,23 +90,17 @@ pub mod can0 {
     impl Can0 {
         #[doc = "CAN Clock Control Register"]
         #[inline(always)]
-        pub const fn clc(
-            self,
-        ) -> Reg<regs::Clc, RW, { 0xF0200000 + 32768 }> {
+        pub const fn clc(self) -> Reg<regs::Clc, RW, { 0xF0200000 + 32768 }> {
             Reg::new()
         }
         #[doc = "Module Identification Register"]
         #[inline(always)]
-        pub const fn id(
-            self,
-        ) -> Reg<regs::Id, R, { 0xF0200000 + 32776 }> {
+        pub const fn id(self) -> Reg<regs::Id, R, { 0xF0200000 + 32776 }> {
             Reg::new()
         }
         #[doc = "Module Control Register"]
         #[inline(always)]
-        pub const fn mcr(
-            self,
-        ) -> Reg<regs::Mcr, RW, { 0xF0200000 + 32816 }> {
+        pub const fn mcr(self) -> Reg<regs::Mcr, RW, { 0xF0200000 + 32816 }> {
             Reg::new()
         }
 ```
