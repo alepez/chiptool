@@ -57,7 +57,7 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
-                        pub fn #name() -> #ty {
+                        pub fn #name(self) -> #ty {
                             #common_path::Reg::new()
                         }
                     ));
