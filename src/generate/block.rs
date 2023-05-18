@@ -47,7 +47,7 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
-                        pub fn #name(self, n: usize) -> #ty {
+                        pub const fn #name(self, n: usize) -> #ty {
                             assert!(n < #len);
                             #common_path::Reg::new()
                         }
@@ -57,7 +57,7 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
-                        pub fn #name(self) -> #ty {
+                        pub const fn #name(self) -> #ty {
                             #common_path::Reg::new()
                         }
                     ));
