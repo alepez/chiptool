@@ -41,23 +41,24 @@ pub fn render(opts: &super::Options, ir: &IR, b: &Block, path: &str) -> Result<T
                     Access::ReadWrite => quote!(#common_path::RW),
                 };
 
-                let ty = quote!(#common_path::Reg<#reg_ty, #access>);
                 if let Some(array) = &i.array {
                     let (len, offs_expr) = super::process_array(array);
+                    let ty = quote!(#common_path::Reg<#reg_ty, #access, #offset + #offs_expr>);
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
                         pub fn #name(self, n: usize) -> #ty {
                             assert!(n < #len);
-                            unsafe { #common_path::Reg::from_ptr(self.0.add(#offset + #offs_expr)) }
+                            #common_path::Reg::new()
                         }
                     ));
                 } else {
+                    let ty = quote!(#common_path::Reg<#reg_ty, #access, #offset>);
                     items.extend(quote!(
                         #doc
                         #[inline(always)]
                         pub fn #name(self) -> #ty {
-                            unsafe { #common_path::Reg::from_ptr(self.0.add(#offset)) }
+                            #common_path::Reg::new()
                         }
                     ));
                 }

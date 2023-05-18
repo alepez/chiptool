@@ -29,43 +29,39 @@ impl Write for RW {}
 impl Write for W {}
 
 #[derive(Copy, Clone, PartialEq, Eq)]
-pub struct Reg<T: Copy, A: Access> {
-    ptr: *mut u8,
-    phantom: PhantomData<*mut (T, A)>,
-}
-unsafe impl<T: Copy, A: Access> Send for Reg<T, A> {}
-unsafe impl<T: Copy, A: Access> Sync for Reg<T, A> {}
+pub struct Reg<T: Copy, A: Access, const ADDRESS: usize>(PhantomData<(T, A)>);
 
-impl<T: Copy, A: Access> Reg<T, A> {
-    #[inline(always)]
-    pub fn from_ptr(ptr: *mut u8) -> Self {
-        Self {
-            ptr,
-            phantom: PhantomData,
-        }
+unsafe impl<T: Copy, A: Access, const ADDRESS: usize> Send for Reg<T, A, ADDRESS> {}
+unsafe impl<T: Copy, A: Access, const ADDRESS: usize> Sync for Reg<T, A, ADDRESS> {}
+
+impl<T: Copy, A: Access, const ADDRESS: usize> Reg<T, A, ADDRESS> {
+    const ADDRESS: usize = ADDRESS;
+
+    pub fn new() -> Self {
+        Self(PhantomData)
     }
 
     #[inline(always)]
     pub fn ptr(&self) -> *mut T {
-        self.ptr as _
+        Self::ADDRESS as _
     }
 }
 
-impl<T: Copy, A: Read> Reg<T, A> {
+impl<T: Copy, A: Read, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     #[inline(always)]
     pub unsafe fn read(&self) -> T {
-        (self.ptr as *mut T).read_volatile()
+        (Self::ADDRESS as *mut T).read_volatile()
     }
 }
 
-impl<T: Copy, A: Write> Reg<T, A> {
+impl<T: Copy, A: Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     #[inline(always)]
     pub unsafe fn write_value(&self, val: T) {
-        (self.ptr as *mut T).write_volatile(val)
+        (Self::ADDRESS as *mut T).write_volatile(val)
     }
 }
 
-impl<T: Default + Copy, A: Write> Reg<T, A> {
+impl<T: Default + Copy, A: Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     #[inline(always)]
     pub unsafe fn write<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
         let mut val = Default::default();
@@ -75,7 +71,7 @@ impl<T: Default + Copy, A: Write> Reg<T, A> {
     }
 }
 
-impl<T: Copy, A: Read + Write> Reg<T, A> {
+impl<T: Copy, A: Read + Write, const ADDRESS: usize> Reg<T, A, ADDRESS> {
     #[inline(always)]
     pub unsafe fn modify<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
         let mut val = self.read();
