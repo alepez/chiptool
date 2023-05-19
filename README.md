@@ -76,7 +76,7 @@ fn main() {
 }
 ```
 
-Something even cleaner can be achieved, but:
+Something even cleaner can be achieved:
 
 ```rs
 pub mod can0 {
